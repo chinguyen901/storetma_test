@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - Shopee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#9f1b00",
+              "on-primary-fixed-variant": "#5c0b00",
+              "surface-dim": "#d3d5d5",
+              "surface-container-lowest": "#ffffff",
+              "on-primary-fixed": "#000000",
+              "on-error-container": "#510017",
+              "on-error": "#ffefef",
+              "surface": "#f6f6f6",
+              "surface-container-highest": "#dbdddd",
+              "surface-bright": "#f6f6f6",
+              "surface-container-low": "#f0f1f1",
+              "secondary-dim": "#9d1b00",
+              "on-tertiary-container": "#510c72",
+              "on-secondary": "#ffefec",
+              "primary-fixed": "#ff775b",
+              "outline-variant": "#acadad",
+              "error-dim": "#a70138",
+              "primary-container": "#ff775b",
+              "secondary-container": "#ffc4b7",
+              "tertiary": "#7f3f9f",
+              "outline": "#767777",
+              "primary-dim": "#9d1a00",
+              "secondary-fixed": "#ffc4b7",
+              "tertiary-container": "#de98ff",
+              "tertiary-fixed-dim": "#d08bf0",
+              "on-tertiary-fixed-variant": "#5b1a7b",
+              "on-tertiary": "#feeeff",
+              "error-container": "#f74b6d",
+              "inverse-primary": "#fd5837",
+              "on-surface": "#2d2f2f",
+              "primary": "#b22203",
+              "on-secondary-fixed": "#6b0f00",
+              "on-secondary-container": "#8e1700",
+              "secondary": "#b22101",
+              "tertiary-fixed": "#de98ff",
+              "surface-container-high": "#e1e3e3",
+              "on-primary-container": "#4b0700",
+              "on-surface-variant": "#5a5c5c",
+              "surface-container": "#e7e8e8",
+              "on-background": "#2d2f2f",
+              "on-tertiary-fixed": "#300047",
+              "surface-tint": "#b22203",
+              "error": "#b41340",
+              "background": "#f6f6f6",
+              "primary-fixed-dim": "#ff5c3b",
+              "inverse-surface": "#0c0f0f",
+              "inverse-on-surface": "#9c9d9d",
+              "on-primary": "#ffefec",
+              "tertiary-dim": "#723292",
+              "secondary-fixed-dim": "#ffb09f",
+              "surface-variant": "#dbdddd"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen flex flex-col">
+<!-- Top Navigation Shell (Filtered for Login Page Intent) -->
+<header class="bg-[#EE4D2D] dark:bg-[#b22203] shadow-sm backdrop-blur-md bg-opacity-95 docked full-width top-0 z-50">
+<div class="flex flex-row items-center justify-between w-full px-4 py-4 max-w-7xl mx-auto h-20">
+<div class="flex items-center gap-4 flex-wrap">
+<a href="home.html" class="text-3xl font-bold text-white tracking-tighter antialiased hover:opacity-90">Shopee</a>
+<span class="hidden md:block text-2xl text-white font-medium ml-4" data-i18n="loginTitle">Login</span>
+<div class="flex items-center gap-1 rounded bg-white/15 px-1 py-0.5 text-xs ml-2">
+<button type="button" class="px-2 py-0.5 rounded text-white/90 hover:bg-white/20" data-lang-btn="vi">VI</button>
+<span class="text-white/50">|</span>
+<button type="button" class="px-2 py-0.5 rounded text-white/90 hover:bg-white/20" data-lang-btn="en">EN</button>
+</div>
+</div>
+<a class="text-white text-sm font-['Inter'] antialiased tracking-tight hover:text-white/70 transition-opacity" href="#" data-i18n="needHelp">Need help?</a>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center relative bg-no-repeat bg-cover bg-center" data-alt="Abstract vibrant orange and red background with soft geometric patterns and light leaks suggesting a busy marketplace energy" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDMV6aJ3zeGhpiRo5hm0sXhCg15gUwU0uOyPw5y2OHb5iS5NMStWpXA6nWPq5AWCVO32en166J4WL-6Ws-hfqEnCMbWa5PxG0cCvPJ7oJ1te2rlXAACvQE3twu2y4A26OYzTDRWeCiru_WjsafxpHXbpQWpnfBkUGaKdk1htDVqdLR568Ski105ke5QFCCxrCfDjX8E9UmCQHYcEetBDJPFr2e9SszCifyBPEtCvf68q-JJMR3WlZfAcgVynUsxHtBmTVe2K2jAa7o');">
+<!-- Overlay for better contrast -->
+<div class="absolute inset-0 bg-primary/10 backdrop-blur-[2px]"></div>
+<div class="relative z-10 w-full max-w-[400px] mx-4 my-12">
+<div class="bg-surface-container-lowest shadow-lg rounded-sm p-8 md:p-10">
+<h1 class="text-xl font-medium mb-8 text-on-surface" data-i18n="loginTitle">Login</h1>
+<form id="loginForm" class="space-y-4">
+<div class="group">
+<input id="loginUsername" class="w-full px-3 py-3 bg-white border border-outline-variant/30 rounded-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/60 text-sm" placeholder="Email/Phone number/Username" type="text" autocomplete="username"/>
+</div>
+<div class="group relative">
+<input class="w-full px-3 py-3 bg-white border border-outline-variant/30 rounded-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/60 text-sm" placeholder="Password" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+<button class="w-full bg-[#EE4D2D] hover:bg-primary text-white font-medium py-3 rounded-sm shadow-sm active:scale-[0.98] transition-all text-sm uppercase tracking-wide" type="submit" data-i18n="logInBtn">
+                        Log In
+                    </button>
+</form>
+<div class="flex justify-between mt-3 text-[12px]">
+<a class="text-blue-700 hover:text-blue-800" href="#" data-i18n="forgotPw">Forgot Password?</a>
+<a class="text-blue-700 hover:text-blue-800" href="#" data-i18n="loginSms">Login with SMS</a>
+</div>
+<!-- Divider -->
+<div class="relative my-8">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/20"></div>
+</div>
+<div class="relative flex justify-center text-xs uppercase">
+<span class="bg-white px-4 text-outline-variant font-medium">OR</span>
+</div>
+</div>
+<!-- Social Logins -->
+<div class="grid grid-cols-3 gap-3">
+<button class="flex items-center justify-center py-2 px-4 border border-outline-variant/20 rounded-sm hover:bg-surface-container-low transition-colors">
+<img alt="Facebook" class="w-5 h-5" data-alt="Blue circular Facebook logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUg2cgXaD7oB04gvkg361u1qC58neR7Gy4dVfMoGYMdNfEbtCI9oZsvit58X4m6uA7w5frzShok0qqATE1aU_d9BvG95kfZKHOASFPUa8u5dQ9fyQimxzte8WDqTziwqCCttJ3P5vEfNWpAxHdvnid7j1T8LuY5T6bZqRkINZ8XbmqqLsmtsuvYHzA_-KBvF1L15-Ik1oSw_HbN9ODbg5TUZ7LYWu4EhT-SKmFaxC10pVYHOKwpr9slLchAYiuvvIPoyw6BNLZSOw"/>
+</button>
+<button class="flex items-center justify-center py-2 px-4 border border-outline-variant/20 rounded-sm hover:bg-surface-container-low transition-colors">
+<img alt="Google" class="w-5 h-5" data-alt="Multi-colored Google G logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4srVnYlwz3Q3UOLKrKUM9ReRY5TQeGVgAW1UyrRJX4wZxhZy9zwE1NwunrWI72h2AQM8hv58KGUCA9yVtWfnRdqnyxwuHmOoMsQTKobNqGO7R5LEvdtPFMKFo7a__a_7agr0LRK5kpTrOsVwy3JoGW6qiTx5qxtO5mMmMArHKip4KDEciln7zo4QFlNW0cHkK_qwnV8Hbi8H_gjUudvl5CGs-UEUPT0VTTYWD5XZ1fkUgD6JQKupNeHRsuQha_jMQKl8O-XtevcA"/>
+</button>
+<button class="flex items-center justify-center py-2 px-4 border border-outline-variant/20 rounded-sm hover:bg-surface-container-low transition-colors">
+<img alt="Apple" class="w-5 h-5" data-alt="Black Apple logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCunVZs19TlnXoh4HC1SLoqYDVKJ1bQeGWoAjlCQYy5xq2bvS7y53L6iR0ynQPLR5mSR2Nt7114ZhIp6Kzow8uUeYuqZl8OS51O1yB9eUUiOQSGhXQeP6arNjQjdiu6Gt9oDbzPwpwdWeFosAvcqmPdc9TWF8KV5faG6TcVDWlu_D7H8QtpTDpLhnwH9CZq3i_mqg60TSdnWdrNZaWdIt91WBG8stc1Q4l-AMwMTvNJSiUKrbwT-rVmOHqOdgdIUboqFIpo5G3AE8g"/>
+</button>
+</div>
+<div class="mt-8 text-center text-sm text-outline">
+                    <span data-i18n="newTo">New to Shopee?</span> <a class="text-[#EE4D2D] font-medium hover:underline" href="#" data-i18n="signUp">Sign Up</a>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-[#2d2f2f] w-full pt-12 pb-12 border-t border-outline-variant/15">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+<div class="col-span-1">
+<h3 class="font-bold text-sm text-on-surface mb-4 uppercase tracking-wider">Customer Service</h3>
+<ul class="space-y-2">
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Help Centre</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Shopee Blog</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Shopee Mall</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">How To Buy</a></li>
+</ul>
+</div>
+<div class="col-span-1">
+<h3 class="font-bold text-sm text-on-surface mb-4 uppercase tracking-wider">About Shopee</h3>
+<ul class="space-y-2">
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Shopee Careers</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Seller Centre</a></li>
+</ul>
+</div>
+<div class="col-span-1">
+<h3 class="font-bold text-sm text-on-surface mb-4 uppercase tracking-wider">Payment</h3>
+<div class="flex flex-wrap gap-2">
+<div class="w-10 h-6 bg-surface-container-low rounded-sm flex items-center justify-center text-[8px] font-bold text-outline">VISA</div>
+<div class="w-10 h-6 bg-surface-container-low rounded-sm flex items-center justify-center text-[8px] font-bold text-outline">MC</div>
+<div class="w-10 h-6 bg-surface-container-low rounded-sm flex items-center justify-center text-[8px] font-bold text-outline">COD</div>
+</div>
+</div>
+<div class="col-span-1">
+<h3 class="font-bold text-sm text-on-surface mb-4 uppercase tracking-wider">Logistics</h3>
+<ul class="space-y-2">
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Shipping Rates</a></li>
+<li><a class="text-xs text-outline hover:text-primary transition-colors" href="#">Return &amp; Refund</a></li>
+</ul>
+</div>
+<div class="col-span-1">
+<h3 class="font-bold text-sm text-on-surface mb-4 uppercase tracking-wider">Follow Us</h3>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">social_leaderboard</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">photo_camera</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">play_circle</span>
+</div>
+</div>
+</div>
+<div class="pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-outline">© 2024 Shopee. All Rights Reserved.</p>
+<div class="flex gap-4 text-xs text-outline">
+<span>Country &amp; Region:</span>
+<a class="hover:text-primary" href="#">Singapore</a>
+<a class="hover:text-primary" href="#">Indonesia</a>
+<a class="hover:text-primary" href="#">Thailand</a>
+<a class="hover:text-primary" href="#">Malaysia</a>
+<a class="hover:text-primary" href="#">Vietnam</a>
+<a class="hover:text-primary" href="#">Philippines</a>
+</div>
+</div>
+</div>
+</footer>
+<script src="js/shopee-i18n.js"></script>
+<script src="js/shopee-user.js"></script>
+<script>
+  (function () {
+    function init() {
+      ShopeeI18n.apply(document);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var el = document.getElementById('loginUsername');
+      var name = (el && el.value && el.value.trim()) || 'Shopper';
+      if (typeof ShopeeUser !== 'undefined') ShopeeUser.setUser({ displayName: name, at: Date.now() });
+      window.location.href = 'home.html';
+    });
+  })();
+</script>
+</body></html>

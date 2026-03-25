@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thanh toán | Shopee</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#b22203",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f0f1f1",
+            "surface-container-high": "#e1e3e3",
+            "on-surface": "#2d2f2f",
+            "on-surface-variant": "#5a5c5c",
+            surface: "#f6f6f6",
+            error: "#b41340",
+          },
+          fontFamily: { body: ["Inter"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
+  <nav class="bg-[#EE4D2D] text-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+      <a href="home.html" class="text-xl font-bold tracking-tighter hover:opacity-90">Shopee</a>
+      <div class="flex items-center gap-3 text-sm flex-wrap">
+        <div class="flex items-center gap-1 rounded bg-white/15 px-1 py-0.5 text-xs">
+          <button type="button" class="px-2 py-0.5 rounded hover:bg-white/20" data-lang-btn="vi">VI</button>
+          <span class="text-white/50">|</span>
+          <button type="button" class="px-2 py-0.5 rounded hover:bg-white/20" data-lang-btn="en">EN</button>
+        </div>
+        <a href="home.html" class="hover:underline opacity-90" data-i18n="home">Trang chủ</a>
+        <a href="cart.html" class="hover:underline opacity-90" data-i18n="cart">Giỏ hàng</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 pb-28">
+    <h1 class="text-lg font-bold mb-4" data-i18n="checkoutTitle">Thanh toán đơn hàng</h1>
+    <p class="text-sm text-on-surface-variant mb-6" data-i18n="checkoutHint">Nhấn nút để mở Stripe. Nhập thẻ test trên trang Stripe.</p>
+
+    <div id="payError" class="hidden mb-4 p-4 rounded-sm bg-red-50 text-error text-sm border border-red-200"></div>
+
+    <section class="bg-white p-4 sm:p-6 shadow-sm border-t-4 border-primary mb-6">
+      <h2 class="font-bold mb-4" data-i18n="products">Sản phẩm</h2>
+      <div id="orderLines" class="space-y-4 text-sm border-b border-slate-200 pb-4 mb-4 min-h-[3rem]"></div>
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-on-surface-variant" data-i18n="subtotal">Tạm tính</span>
+        <span id="subtotalVal">$0.00</span>
+      </div>
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-on-surface-variant" data-i18n="shippingFee">Phí vận chuyển</span>
+        <span id="shipVal">$0.00</span>
+      </div>
+      <div class="flex justify-between text-sm mb-4">
+        <span class="text-on-surface-variant" data-i18n="discount">Giảm giá</span>
+        <span class="text-primary" id="discVal">$0.00</span>
+      </div>
+      <div class="flex justify-between items-end pt-4 border-t border-slate-200">
+        <span class="font-bold" data-i18n="grandTotal">Tổng thanh toán</span>
+        <span class="text-2xl font-bold text-primary" id="grandVal">$0.00</span>
+      </div>
+    </section>
+
+    <button id="payBtn" type="button" class="w-full sm:w-auto min-h-[48px] px-8 py-4 bg-primary hover:bg-[#9d1b00] text-white font-bold text-base rounded-sm shadow-lg active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed" data-i18n="payStripe">
+      Thanh toán qua Stripe
+    </button>
+    <p id="payStatus" class="mt-3 text-sm text-on-surface-variant hidden"></p>
+  </main>
+
+  <footer class="bg-white border-t py-6 text-center text-xs text-slate-500">
+    © 2024 Shopee demo · Stripe test
+  </footer>
+
+  <script src="js/shopee-i18n.js"></script>
+  <script src="js/shopee-catalog.js"></script>
+  <script src="js/shopee-cart.js"></script>
+  <script>
+    (function () {
+      var SHIP_CENTS = 550;
+      var DISC_CENTS = 0;
+
+      function fmt(c) {
+        return ShopeeCatalog.formatMoney(c);
+      }
+
+      function pname(p) {
+        return ShopeeCatalog.productName(p);
+      }
+
+      function payload() {
+        return ShopeeCart.buildCheckoutPayload(ShopeeCatalog.getCatalog());
+      }
+
+      function render() {
+        ShopeeI18n.apply(document);
+        var cat = ShopeeCatalog.getCatalog();
+        var map = {};
+        cat.forEach(function (p) { map[p.id] = p; });
+        var lines = ShopeeCart.getCart();
+        var box = document.getElementById('orderLines');
+        var sub = 0;
+        if (!lines.length) {
+          box.innerHTML = '<p class="text-on-surface-variant">' + ShopeeI18n.t('emptyCart') + '</p>';
+        } else {
+          box.innerHTML = lines
+            .map(function (line) {
+              var p = map[line.id];
+              if (!p) return '';
+              sub += p.price_cents * line.qty;
+              return (
+                '<div class="flex gap-3">' +
+                '<img class="w-16 h-16 object-cover rounded-sm shrink-0" alt="" src="' +
+                p.image +
+                '"/>' +
+                '<div><p class="font-medium">' +
+                pname(p) +
+                '</p>' +
+                '<p class="text-on-surface-variant text-xs">x' +
+                line.qty +
+                ' · ' +
+                fmt(p.price_cents) +
+                '</p></div></div>'
+              );
+            })
+            .join('');
+        }
+        var grand = Math.max(0, sub + SHIP_CENTS - DISC_CENTS);
+        document.getElementById('subtotalVal').textContent = fmt(sub);
+        document.getElementById('shipVal').textContent = fmt(SHIP_CENTS);
+        document.getElementById('discVal').textContent = DISC_CENTS ? '-' + fmt(DISC_CENTS) : fmt(0);
+        document.getElementById('grandVal').textContent = fmt(grand);
+
+        var btn = document.getElementById('payBtn');
+        var items = payload();
+        btn.disabled = !items.length;
+      }
+
+      var btn = document.getElementById('payBtn');
+      var err = document.getElementById('payError');
+      var status = document.getElementById('payStatus');
+
+      btn.addEventListener('click', async function () {
+        err.classList.add('hidden');
+        err.textContent = '';
+        status.classList.add('hidden');
+        var items = payload();
+        if (!items.length) {
+          err.textContent = ShopeeI18n.t('emptyCart');
+          err.classList.remove('hidden');
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = ShopeeI18n.t('opening');
+        try {
+          var res = await fetch('/.netlify/functions/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: items }),
+          });
+          var data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+            return;
+          }
+          throw new Error(data.error || 'Không tạo được phiên thanh toán');
+        } catch (e) {
+          err.textContent = e.message || 'Lỗi kết nối. Kiểm tra STRIPE_SECRET_KEY trên Netlify.';
+          err.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = ShopeeI18n.t('payStripe');
+        }
+      });
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+      else render();
+      window.addEventListener('shopee-cart-changed', render);
+    })();
+  </script>
+</body>
+</html>

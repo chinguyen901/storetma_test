@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giỏ hàng | Shopee</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#b22203",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f0f1f1",
+            "on-surface": "#2d2f2f",
+            "on-surface-variant": "#5a5c5c",
+            surface: "#f6f6f6",
+          },
+          fontFamily: { body: ["Inter"] },
+        },
+      },
+    };
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
+  <nav class="bg-[#EE4D2D] text-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+      <a href="home.html" class="text-xl font-bold tracking-tighter hover:opacity-90">Shopee</a>
+      <div class="flex items-center gap-3 text-sm flex-wrap">
+        <div class="flex items-center gap-1 rounded bg-white/15 px-1 py-0.5 text-xs">
+          <button type="button" class="px-2 py-0.5 rounded hover:bg-white/20" data-lang-btn="vi">VI</button>
+          <span class="text-white/50">|</span>
+          <button type="button" class="px-2 py-0.5 rounded hover:bg-white/20" data-lang-btn="en">EN</button>
+        </div>
+        <a href="home.html" class="hover:underline opacity-90" data-i18n="home">Trang chủ</a>
+        <a href="checkout.html" class="hover:underline opacity-90 font-bold" data-i18n="checkout">Thanh toán</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 pb-28">
+    <h1 class="text-lg font-bold mb-4" data-i18n="cartTitle">Giỏ hàng</h1>
+    <div id="cartEmpty" class="hidden text-on-surface-variant text-sm py-8 text-center">
+      <p data-i18n="emptyCart">Giỏ trống</p>
+      <a href="home.html" class="inline-block mt-4 text-primary font-medium hover:underline" data-i18n="goShopping">Tiếp tục mua</a>
+    </div>
+    <div id="cartList" class="space-y-3"></div>
+    <div id="cartFooter" class="hidden mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <span class="text-sm text-on-surface-variant" data-i18n="total">Tổng</span>
+        <span id="cartTotal" class="text-xl font-bold text-primary ml-2">$0.00</span>
+      </div>
+      <a href="checkout.html" class="inline-flex justify-center items-center min-h-[48px] px-8 py-3 bg-primary hover:bg-[#9d1b00] text-white font-bold rounded-sm shadow-lg text-center" data-i18n="proceedCheckout">Thanh toán</a>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t py-6 text-center text-xs text-slate-500 mt-auto">
+    © 2024 Shopee demo
+  </footer>
+
+  <script src="js/shopee-i18n.js"></script>
+  <script src="js/shopee-catalog.js"></script>
+  <script src="js/shopee-cart.js"></script>
+  <script>
+    (function () {
+      function pname(p) {
+        return ShopeeCatalog.productName(p);
+      }
+      function render() {
+        ShopeeI18n.apply(document);
+        var cat = ShopeeCatalog.getCatalog();
+        var map = {};
+        cat.forEach(function (p) { map[p.id] = p; });
+        var lines = ShopeeCart.getCart();
+        var list = document.getElementById('cartList');
+        var empty = document.getElementById('cartEmpty');
+        var foot = document.getElementById('cartFooter');
+        var totalEl = document.getElementById('cartTotal');
+        if (!lines.length) {
+          list.innerHTML = '';
+          empty.classList.remove('hidden');
+          foot.classList.add('hidden');
+          return;
+        }
+        empty.classList.add('hidden');
+        foot.classList.remove('hidden');
+        var total = 0;
+        list.innerHTML = lines
+          .map(function (line) {
+            var p = map[line.id];
+            if (!p) return '';
+            var sub = p.price_cents * line.qty;
+            total += sub;
+            return (
+              '<div class="flex gap-3 bg-white p-3 rounded shadow-sm border border-slate-100 items-center" data-line-id="' +
+              line.id +
+              '">' +
+              '<img src="' +
+              p.image +
+              '" alt="" class="w-16 h-16 object-cover rounded shrink-0"/>' +
+              '<div class="flex-1 min-w-0">' +
+              '<p class="font-medium text-sm truncate">' +
+              pname(p) +
+              '</p>' +
+              '<p class="text-xs text-on-surface-variant">' +
+              ShopeeCatalog.formatMoney(p.price_cents) +
+              '</p>' +
+              '</div>' +
+              '<div class="flex items-center gap-2 shrink-0">' +
+              '<button type="button" class="w-8 h-8 border rounded text-lg leading-none" data-qty-minus="' +
+              line.id +
+              '">−</button>' +
+              '<input type="number" min="1" max="99" class="w-12 text-center border rounded text-sm py-1" data-qty-input="' +
+              line.id +
+              '" value="' +
+              line.qty +
+              '"/>' +
+              '<button type="button" class="w-8 h-8 border rounded text-lg leading-none" data-qty-plus="' +
+              line.id +
+              '">+</button>' +
+              '</div>' +
+              '<button type="button" class="text-red-600 text-xs font-medium px-2" data-remove="' +
+              line.id +
+              '">' +
+              ShopeeI18n.t('remove') +
+              '</button>' +
+              '</div>'
+            );
+          })
+          .join('');
+        totalEl.textContent = ShopeeCatalog.formatMoney(total);
+
+        list.querySelectorAll('[data-qty-minus]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var id = b.getAttribute('data-qty-minus');
+            var line = ShopeeCart.getCart().find(function (l) { return l.id === id; });
+            if (!line) return;
+            ShopeeCart.setQty(id, line.qty - 1);
+            render();
+          });
+        });
+        list.querySelectorAll('[data-qty-plus]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var id = b.getAttribute('data-qty-plus');
+            var line = ShopeeCart.getCart().find(function (l) { return l.id === id; });
+            if (!line) return;
+            ShopeeCart.setQty(id, line.qty + 1);
+            render();
+          });
+        });
+        list.querySelectorAll('[data-qty-input]').forEach(function (inp) {
+          inp.addEventListener('change', function () {
+            var id = inp.getAttribute('data-qty-input');
+            ShopeeCart.setQty(id, parseInt(inp.value, 10) || 1);
+            render();
+          });
+        });
+        list.querySelectorAll('[data-remove]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            ShopeeCart.removeLine(b.getAttribute('data-remove'));
+            render();
+          });
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+      else render();
+      window.addEventListener('shopee-cart-changed', render);
+    })();
+  </script>
+</body>
+</html>
