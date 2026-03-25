@@ -90,6 +90,14 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .product-card:hover .add-to-cart-btn { opacity: 1; transform: translateY(0); }
+        .cart-hover { transition: transform 180ms ease, filter 180ms ease; will-change: transform; }
+        .cart-hover:hover { transform: translateY(-2px) scale(1.06); filter: drop-shadow(0 10px 12px rgba(0,0,0,0.18)); }
+        #cartFab { position: fixed; right: 18px; bottom: 18px; z-index: 80; }
+        #cartFab.hidden { display: none; }
+        #cartFab .fab-btn { width: 56px; height: 56px; border-radius: 9999px; display:flex; align-items:center; justify-content:center; background:#EE4D2D; color:white; box-shadow: 0 18px 35px rgba(238,77,45,0.35); transition: transform 180ms ease, box-shadow 180ms ease; }
+        #cartFab:hover .fab-btn { transform: translateY(-2px) scale(1.04); box-shadow: 0 22px 45px rgba(238,77,45,0.45); }
+        #cartFabCount { position:absolute; top:-6px; right:-6px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 9999px; background: #fff; color:#b22203; font-weight: 800; font-size: 11px; display:flex; align-items:center; justify-content:center; border: 1px solid #b22203; }
+        .fly-img { position: fixed; z-index: 9999; width: 42px; height: 42px; border-radius: 10px; overflow: hidden; background-size: cover; background-position: center; box-shadow: 0 18px 35px rgba(0,0,0,0.22); pointer-events: none; }
     </style>
 </head>
 <body class="bg-surface font-body text-on-surface antialiased">
@@ -124,7 +132,7 @@
 </button>
 </div>
 <div class="flex items-center gap-6">
-<a href="cart.html" class="relative cursor-pointer group scale-95 active:duration-150" title="Cart">
+<a id="cartIconLink" href="cart.html" class="relative cursor-pointer group scale-95 active:duration-150 cart-hover" title="Cart">
 <span class="material-symbols-outlined text-3xl" data-icon="shopping_cart">shopping_cart</span>
 <span id="cartCountBadge" class="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-primary min-w-[1.25rem] text-center hidden">0</span>
 </a>
@@ -262,6 +270,12 @@
 <button type="button" class="bg-white border border-outline-variant text-on-surface-variant px-12 py-3 rounded-sm hover:bg-surface-container-low transition-colors font-medium" data-i18n="seeAll">See More</button>
 </div>
 </main>
+<a id="cartFab" href="cart.html" class="hidden" aria-label="Cart">
+  <div class="fab-btn cart-hover">
+    <span class="material-symbols-outlined text-[28px]" aria-hidden="true">shopping_cart</span>
+  </div>
+  <div id="cartFabCount" class="hidden">0</div>
+</a>
 <footer class="bg-[#f6f6f6] dark:bg-[#2d2f2f] w-full pt-12 pb-24 border-t border-[#e1e3e3] dark:border-[#acadad]/15">
 <div class="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-7xl mx-auto px-6 text-xs font-['Inter'] leading-loose">
 <div class="flex flex-col gap-4">

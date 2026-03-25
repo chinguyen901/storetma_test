@@ -56,10 +56,55 @@
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         var id = btn.getAttribute('data-add-cart');
+        animateFlyToCart(btn);
         ShopeeCart.addToCart(id, 1);
         updateBadge();
       });
     });
+  }
+
+  function animateFlyToCart(btn) {
+    try {
+      var dest = document.getElementById('cartFab');
+      if (!dest || dest.classList.contains('hidden')) dest = document.getElementById('cartIconLink');
+      if (!dest) return;
+
+      var card = btn.closest('.product-card') || btn.closest('.flex') || btn.parentElement;
+      var img = card ? card.querySelector('img') : null;
+      if (!img) return;
+
+      var from = img.getBoundingClientRect();
+      var to = dest.getBoundingClientRect();
+
+      var el = document.createElement('div');
+      el.className = 'fly-img';
+      el.style.left = from.left + from.width / 2 - 21 + 'px';
+      el.style.top = from.top + from.height / 2 - 21 + 'px';
+      el.style.backgroundImage = 'url(\"' + img.src + '\")';
+      document.body.appendChild(el);
+
+      var dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+      var dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+
+      if (el.animate) {
+        el.animate(
+          [
+            { transform: 'translate(0px, 0px) scale(1)', opacity: 0.95 },
+            { transform: 'translate(' + dx + 'px,' + (dy - 20) + 'px) scale(0.35)', opacity: 0.2 }
+          ],
+          { duration: 520, easing: 'cubic-bezier(.2,.85,.2,1)' }
+        ).onfinish = function () { el.remove(); };
+      } else {
+        el.style.transition = 'transform 520ms cubic-bezier(.2,.85,.2,1), opacity 520ms cubic-bezier(.2,.85,.2,1)';
+        requestAnimationFrame(function () {
+          el.style.transform = 'translate(' + dx + 'px,' + (dy - 20) + 'px) scale(0.35)';
+          el.style.opacity = '0.2';
+        });
+        setTimeout(function () { el.remove(); }, 560);
+      }
+    } catch (err) {
+      // swallow animation errors (non-blocking)
+    }
   }
 
   function updateBadge() {
@@ -68,6 +113,13 @@
     if (el) {
       el.textContent = String(n);
       el.classList.toggle('hidden', n === 0);
+    }
+    var fab = document.getElementById('cartFab');
+    var fabCount = document.getElementById('cartFabCount');
+    if (fab) fab.classList.toggle('hidden', n === 0);
+    if (fabCount) {
+      fabCount.textContent = String(n);
+      fabCount.classList.toggle('hidden', n === 0);
     }
   }
 
