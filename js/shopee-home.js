@@ -46,13 +46,19 @@
     var daily = cat.filter(function (p) { return p.section === 'daily'; });
     var fg = document.getElementById('flashSaleGrid');
     var dg = document.getElementById('dailyGrid');
-    if (fg) fg.innerHTML = flash.map(function (p) { return renderProductCard(p, true); }).join('');
-    if (dg) dg.innerHTML = daily.map(function (p) { return renderProductCard(p, false); }).join('');
-    bindAddButtons();
+    if (fg) {
+      // Keep flash lightweight for perf with big catalogs
+      fg.innerHTML = flash.slice(0, 12).map(function (p) { return renderProductCard(p, true); }).join('');
+    }
+    if (dg) {
+      renderDaily(true, daily);
+    }
   }
 
   function bindAddButtons() {
     document.querySelectorAll('[data-add-cart]').forEach(function (btn) {
+      if (btn.dataset && btn.dataset.boundAddCart === '1') return;
+      if (btn.dataset) btn.dataset.boundAddCart = '1';
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         var id = btn.getAttribute('data-add-cart');
@@ -60,6 +66,46 @@
         ShopeeCart.addToCart(id, 1);
         updateBadge();
       });
+    });
+  }
+
+  var DAILY_PAGE_INIT = 24;
+  var DAILY_PAGE_MORE = 50;
+  var dailyOffset = 0;
+
+  function renderDaily(reset, dailyList) {
+    var dg = document.getElementById('dailyGrid');
+    if (!dg) return;
+
+    var list = Array.isArray(dailyList) ? dailyList : ShopeeCatalog.getCatalog().filter(function (p) { return p.section === 'daily'; });
+
+    if (reset) {
+      dailyOffset = 0;
+      dg.innerHTML = '';
+    }
+
+    var pageSize = reset ? DAILY_PAGE_INIT : DAILY_PAGE_MORE;
+    var next = list.slice(dailyOffset, dailyOffset + pageSize);
+    dailyOffset += next.length;
+
+    if (next.length) {
+      dg.insertAdjacentHTML('beforeend', next.map(function (p) { return renderProductCard(p, false); }).join(''));
+      bindAddButtons();
+    }
+
+    var btn = document.getElementById('btnSeeMoreDaily');
+    if (btn) {
+      btn.classList.toggle('hidden', dailyOffset >= list.length);
+    }
+  }
+
+  function bindSeeMore() {
+    var btn = document.getElementById('btnSeeMoreDaily');
+    if (!btn) return;
+    if (btn.dataset && btn.dataset.boundSeeMore === '1') return;
+    if (btn.dataset) btn.dataset.boundSeeMore = '1';
+    btn.addEventListener('click', function () {
+      renderDaily(false);
     });
   }
 
@@ -215,6 +261,11 @@
   function init() {
     ShopeeI18n.apply(document);
     ShopeeUser.renderHeader();
+    // Inflate demo catalog once for big-list testing
+    if (ShopeeCatalog && typeof ShopeeCatalog.ensureDemoCatalogSize === 'function') {
+      ShopeeCatalog.ensureDemoCatalogSize(10000);
+    }
+    bindSeeMore();
     renderGrids();
     renderAdmin();
     updateBadge();

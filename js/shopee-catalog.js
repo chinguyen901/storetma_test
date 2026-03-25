@@ -22,6 +22,67 @@
     { id: 'p18', nameVi: 'Kính mát polarized', nameEn: 'Polarized Sunglasses', price_cents: 1120, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDN87nxS2MQTKAMf7H3o-bbHCSv32UorJZ_LV8kSCCwevzX51NAEo9piXm7VACj73jRvQIuD5CdM0qwAhUE1cvElgVorCiblmXrcfliqX5iQgq_ohwxZS9mCyV48445mz-xzLvIBumVzWNFelPivLcTGS7hsjaYfBYjGHhcRGr212Kd8iJu0HofbxKb4i6C0pTJxxlOxQpZr657NF2XJYBwMbI3vrUbzrnT-Iv-t-Ww2O4E9b199TZGB2bBIg_GBfiq2cB8tGzPjrA', section: 'daily', badge: '-30%' }
   ];
 
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function hash32(str) {
+    var h = 2166136261; // FNV-1a
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function makeRng(seed) {
+    var t = seed >>> 0;
+    return function () {
+      // xorshift32
+      t ^= t << 13;
+      t ^= t >>> 17;
+      t ^= t << 5;
+      return (t >>> 0) / 4294967296;
+    };
+  }
+
+  function demoImageFor(id) {
+    // Stable, free, no-api-key placeholder images.
+    return 'https://picsum.photos/seed/' + encodeURIComponent(id) + '/600/600';
+  }
+
+  function inflateDemoCatalog(targetSize) {
+    var base = JSON.parse(JSON.stringify(SEED));
+    if (!targetSize || targetSize <= base.length) return base;
+
+    var out = base.slice();
+    var labels = ['Pro', 'Max', 'Lite', 'Plus', 'Air', 'S', 'X', 'Ultra', '2026', 'Edition'];
+    var badges = ['NEW', 'HOT', 'BEST', '-10%', '-15%', '-20%', '-25%', '-30%', '-40%', '-50%', '-60%'];
+
+    for (var i = out.length; i < targetSize; i++) {
+      var b = base[i % base.length];
+      var id = b.id + '_demo_' + i;
+      var rng = makeRng(hash32(id));
+      var label = labels[Math.floor(rng() * labels.length)];
+      var model = String(1000 + Math.floor(rng() * 9000));
+
+      var priceFactor = 0.7 + rng() * 1.6; // 0.7x .. 2.3x
+      var cents = clamp(Math.round((b.price_cents || 1000) * priceFactor), 50, 99999900);
+
+      var isFlash = rng() < 0.12; // ~12% flash, rest daily
+      out.push({
+        id: id,
+        nameVi: (b.nameVi || 'Sản phẩm') + ' ' + label + ' ' + model,
+        nameEn: (b.nameEn || 'Product') + ' ' + label + ' ' + model,
+        price_cents: cents,
+        image: demoImageFor(id),
+        section: isFlash ? 'flash' : 'daily',
+        badge: badges[Math.floor(rng() * badges.length)]
+      });
+    }
+    return out;
+  }
+
   function load() {
     try {
       var raw = localStorage.getItem(KEY);
@@ -99,6 +160,17 @@
     deleteProduct: deleteProduct,
     productName: productName,
     formatMoney: formatMoney,
+    ensureDemoCatalogSize: function (targetSize) {
+      try {
+        var list = load();
+        if (Array.isArray(list) && list.length >= targetSize) return list.length;
+        var inflated = inflateDemoCatalog(targetSize);
+        save(inflated);
+        return inflated.length;
+      } catch (e) {
+        return 0;
+      }
+    },
     resetToSeed: function () {
       localStorage.removeItem(KEY);
     }
