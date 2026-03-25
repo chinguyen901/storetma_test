@@ -44,6 +44,11 @@
     var cat = ShopeeCatalog.getCatalog();
     var flash = cat.filter(function (p) { return p.section === 'flash'; });
     var daily = cat.filter(function (p) { return p.section === 'daily'; });
+
+    if (currentCategory !== 'all') {
+      flash = flash.filter(function (p) { return p.category === currentCategory; });
+      daily = daily.filter(function (p) { return p.category === currentCategory; });
+    }
     var fg = document.getElementById('flashSaleGrid');
     var dg = document.getElementById('dailyGrid');
     if (fg) {
@@ -72,6 +77,29 @@
   var DAILY_PAGE_INIT = 24;
   var DAILY_PAGE_MORE = 50;
   var dailyOffset = 0;
+  var currentCategory = 'all';
+
+  function setActiveCategoryUI() {
+    document.querySelectorAll('[data-category]').forEach(function (el) {
+      var cat = el.getAttribute('data-category');
+      var active = cat === currentCategory;
+      el.classList.toggle('text-primary', active);
+      el.classList.toggle('font-bold', active);
+      var box = el.querySelector('div');
+      if (box) {
+        box.classList.toggle('bg-primary', active);
+        box.classList.toggle('text-white', active);
+        box.classList.toggle('ring-2', active);
+        box.classList.toggle('ring-primary/20', active);
+        box.classList.toggle('bg-surface-container-low', !active);
+      }
+      var icon = el.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.classList.toggle('text-white', active);
+        icon.classList.toggle('text-primary', !active);
+      }
+    });
+  }
 
   function renderDaily(reset, dailyList) {
     var dg = document.getElementById('dailyGrid');
@@ -107,6 +135,20 @@
     btn.addEventListener('click', function () {
       renderDaily(false);
     });
+  }
+
+  function bindCategories() {
+    document.querySelectorAll('[data-category]').forEach(function (btn) {
+      if (btn.dataset && btn.dataset.boundCategory === '1') return;
+      if (btn.dataset) btn.dataset.boundCategory = '1';
+      btn.addEventListener('click', function () {
+        var cat = btn.getAttribute('data-category') || 'all';
+        currentCategory = cat;
+        setActiveCategoryUI();
+        renderGrids();
+      });
+    });
+    setActiveCategoryUI();
   }
 
   function animateFlyToCart(btn) {
@@ -238,25 +280,7 @@
     ShopeeI18n.apply(box);
   }
 
-  document.getElementById('formAddProduct') &&
-    document.getElementById('formAddProduct').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var vi = document.getElementById('newNameVi').value.trim();
-      var en = document.getElementById('newNameEn').value.trim() || vi;
-      var pr = parseFloat(document.getElementById('newPrice').value, 10);
-      var sec = document.getElementById('newSection').value;
-      if (!vi || !pr || pr <= 0) return;
-      ShopeeCatalog.addProduct({
-        nameVi: vi,
-        nameEn: en,
-        price_cents: Math.round(pr * 100),
-        section: sec,
-        badge: 'NEW'
-      });
-      e.target.reset();
-      renderAdmin();
-      renderGrids();
-    });
+  // Admin product management UI removed from home page.
 
   function init() {
     ShopeeI18n.apply(document);
@@ -266,8 +290,8 @@
       ShopeeCatalog.ensureDemoCatalogSize(10000);
     }
     bindSeeMore();
+    bindCategories();
     renderGrids();
-    renderAdmin();
     updateBadge();
     window.addEventListener('shopee-cart-changed', updateBadge);
   }

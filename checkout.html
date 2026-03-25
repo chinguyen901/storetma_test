@@ -164,7 +164,7 @@
         btn.disabled = true;
         btn.textContent = ShopeeI18n.t('opening');
         try {
-          var res = await fetch('/.netlify/functions/create-checkout', {
+          var res = await fetch('/api/create-checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items: items }),

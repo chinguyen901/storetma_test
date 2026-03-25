@@ -62,6 +62,16 @@
       successTitle: 'Thanh toán thành công',
       successMsg: 'Cảm ơn bạn. Đơn hàng đã được ghi nhận (test).',
       continueShop: 'Tiếp tục mua sắm'
+      ,
+      catAll: 'Tất cả',
+      catFashion: 'Thời trang',
+      catElectronics: 'Điện tử',
+      catBeauty: 'Làm đẹp',
+      catHome: 'Nhà cửa & Đời sống',
+      catGaming: 'Gaming',
+      catSupermarket: 'Siêu thị',
+      catAccessories: 'Phụ kiện',
+      catKids: 'Mẹ & Bé'
     },
     en: {
       download: 'Download',
@@ -123,6 +133,16 @@
       successTitle: 'Payment successful',
       successMsg: 'Thank you. Order recorded (test mode).',
       continueShop: 'Continue shopping'
+      ,
+      catAll: 'All',
+      catFashion: 'Fashion',
+      catElectronics: 'Electronics',
+      catBeauty: 'Beauty',
+      catHome: 'Home & Living',
+      catGaming: 'Gaming',
+      catSupermarket: 'Supermarket',
+      catAccessories: 'Accessories',
+      catKids: 'Toys & Kids'
     }
   };
 
