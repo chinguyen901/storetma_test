@@ -40,26 +40,6 @@
     );
   }
 
-  function renderGrids() {
-    var cat = ShopeeCatalog.getCatalog();
-    var flash = cat.filter(function (p) { return p.section === 'flash'; });
-    var daily = cat.filter(function (p) { return p.section === 'daily'; });
-
-    if (currentCategory !== 'all') {
-      flash = flash.filter(function (p) { return p.category === currentCategory; });
-      daily = daily.filter(function (p) { return p.category === currentCategory; });
-    }
-    var fg = document.getElementById('flashSaleGrid');
-    var dg = document.getElementById('dailyGrid');
-    if (fg) {
-      // Keep flash lightweight for perf with big catalogs
-      fg.innerHTML = flash.slice(0, 12).map(function (p) { return renderProductCard(p, true); }).join('');
-    }
-    if (dg) {
-      renderDaily(true, daily);
-    }
-  }
-
   function bindAddButtons() {
     document.querySelectorAll('[data-add-cart]').forEach(function (btn) {
       if (btn.dataset && btn.dataset.boundAddCart === '1') return;
@@ -77,7 +57,13 @@
   var DAILY_PAGE_INIT = 24;
   var DAILY_PAGE_MORE = 50;
   var dailyOffset = 0;
+  var dailyHasMore = true;
   var currentCategory = 'all';
+  var dailySearchTerm = '';
+  var dailySortMode = 'relevance';
+  var flashRequestToken = 0;
+  var dailyRequestToken = 0;
+  var productCache = {};
 
   function setActiveCategoryUI() {
     document.querySelectorAll('[data-category]').forEach(function (el) {
@@ -105,7 +91,8 @@
     var dg = document.getElementById('dailyGrid');
     if (!dg) return;
 
-    var list = Array.isArray(dailyList) ? dailyList : ShopeeCatalog.getCatalog().filter(function (p) { return p.section === 'daily'; });
+    var list = Array.isArray(dailyList) ? dailyList.slice() : [];
+    list = applyDailyControls(list);
 
     if (reset) {
       dailyOffset = 0;
@@ -121,10 +108,41 @@
       bindAddButtons();
     }
 
-    var btn = document.getElementById('btnSeeMoreDaily');
-    if (btn) {
-      btn.classList.toggle('hidden', dailyOffset >= list.length);
+    updateSeeMoreButton();
+  }
+
+  function applyDailyControls(list) {
+    var out = list;
+    var q = (dailySearchTerm || '').toLowerCase();
+    if (q) {
+      out = out.filter(function (p) {
+        var name = pname(p).toLowerCase();
+        return name.indexOf(q) !== -1;
+      });
     }
+
+    if (dailySortMode === 'priceAsc') {
+      out.sort(function (a, b) { return a.price_cents - b.price_cents; });
+    } else if (dailySortMode === 'priceDesc') {
+      out.sort(function (a, b) { return b.price_cents - a.price_cents; });
+    } else if (dailySortMode === 'nameAsc') {
+      out.sort(function (a, b) { return pname(a).localeCompare(pname(b)); });
+    }
+    return out;
+  }
+
+  function getCategoryHeadingText() {
+    if (currentCategory === 'all') return ShopeeI18n.t('dailyDiscover');
+    var el = document.querySelector('[data-category="' + currentCategory + '"] [data-i18n]');
+    if (!el) return ShopeeI18n.t('dailyDiscover');
+    var key = el.getAttribute('data-i18n');
+    return key ? ShopeeI18n.t(key) : ShopeeI18n.t('dailyDiscover');
+  }
+
+  function updateDailyHeading() {
+    var heading = document.getElementById('dailyHeading');
+    if (!heading) return;
+    heading.textContent = getCategoryHeadingText();
   }
 
   function bindSeeMore() {
@@ -133,7 +151,7 @@
     if (btn.dataset && btn.dataset.boundSeeMore === '1') return;
     if (btn.dataset) btn.dataset.boundSeeMore = '1';
     btn.addEventListener('click', function () {
-      renderDaily(false);
+      loadDailyMore();
     });
   }
 
@@ -145,10 +163,140 @@
         var cat = btn.getAttribute('data-category') || 'all';
         currentCategory = cat;
         setActiveCategoryUI();
+        updateDailyHeading();
         renderGrids();
       });
     });
     setActiveCategoryUI();
+    updateDailyHeading();
+  }
+
+  function bindDailyControls() {
+    var search = document.getElementById('dailySearchInput');
+    var searchBtn = document.getElementById('dailySearchBtn');
+    var sort = document.getElementById('dailySortSelect');
+    function runSearch() {
+      dailySearchTerm = search ? (search.value || '') : '';
+      renderGrids();
+    }
+    if (search && !(search.dataset && search.dataset.boundDailySearch === '1')) {
+      if (search.dataset) search.dataset.boundDailySearch = '1';
+      search.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          runSearch();
+        }
+      });
+    }
+    if (searchBtn && !(searchBtn.dataset && searchBtn.dataset.boundDailySearchBtn === '1')) {
+      if (searchBtn.dataset) searchBtn.dataset.boundDailySearchBtn = '1';
+      searchBtn.addEventListener('click', runSearch);
+    }
+    if (sort && !(sort.dataset && sort.dataset.boundDailySort === '1')) {
+      if (sort.dataset) sort.dataset.boundDailySort = '1';
+      sort.addEventListener('change', function () {
+        dailySortMode = sort.value || 'relevance';
+        renderGrids();
+      });
+    }
+  }
+
+  function updateSeeMoreButton() {
+    var btn = document.getElementById('btnSeeMoreDaily');
+    if (!btn) return;
+    btn.classList.toggle('hidden', !dailyHasMore);
+  }
+
+  function mapRowToProduct(r) {
+    return {
+      id: r.id,
+      nameVi: r.nameVi || r.name_vi || '',
+      nameEn: r.nameEn || r.name_en || '',
+      price_cents: r.price_cents,
+      image: r.image,
+      section: r.section,
+      category: r.category,
+      badge: r.badge || ''
+    };
+  }
+
+  function cacheProducts(list) {
+    list.forEach(function (p) {
+      if (!p || !p.id) return;
+      productCache[p.id] = p;
+    });
+    if (ShopeeCatalog && typeof ShopeeCatalog.setCatalog === 'function') {
+      ShopeeCatalog.setCatalog(Object.keys(productCache).map(function (k) { return productCache[k]; }));
+    }
+  }
+
+  async function fetchProducts(opts) {
+    var p = new URLSearchParams();
+    p.set('section', opts.section);
+    p.set('category', opts.category || 'all');
+    p.set('q', opts.q || '');
+    p.set('sort', opts.sort || 'relevance');
+    p.set('limit', String(opts.limit || 24));
+    p.set('offset', String(opts.offset || 0));
+    var res = await fetch('/api/products?' + p.toString());
+    if (!res.ok) throw new Error('Failed to load products');
+    return res.json();
+  }
+
+  async function loadDaily(reset) {
+    var dg = document.getElementById('dailyGrid');
+    if (!dg) return;
+    if (reset) {
+      dailyOffset = 0;
+      dailyHasMore = true;
+      dg.innerHTML = '';
+      updateSeeMoreButton();
+    }
+    var token = ++dailyRequestToken;
+    var limit = reset ? DAILY_PAGE_INIT : DAILY_PAGE_MORE;
+    var data = await fetchProducts({
+      section: 'daily',
+      category: currentCategory,
+      q: dailySearchTerm,
+      sort: dailySortMode,
+      limit: limit,
+      offset: dailyOffset
+    });
+    if (token !== dailyRequestToken) return;
+    var list = (data.items || []).map(mapRowToProduct);
+    cacheProducts(list);
+    dailyOffset += list.length;
+    dailyHasMore = !!data.hasMore;
+    renderDaily(false, list);
+    updateSeeMoreButton();
+  }
+
+  async function loadDailyMore() {
+    try {
+      if (!dailyHasMore) return;
+      await loadDaily(false);
+    } catch (e) {
+      // non-blocking for UX
+    }
+  }
+
+  async function loadFlash() {
+    var fg = document.getElementById('flashSaleGrid');
+    if (!fg) return;
+    var token = ++flashRequestToken;
+    var data = await fetchProducts({
+      section: 'flash',
+      category: currentCategory,
+      q: '',
+      sort: 'relevance',
+      limit: 12,
+      offset: 0
+    });
+    if (token !== flashRequestToken) return;
+    var list = (data.items || []).map(mapRowToProduct);
+    cacheProducts(list);
+    fg.innerHTML = list.map(function (p) { return renderProductCard(p, true); }).join('');
+    bindAddButtons();
   }
 
   function animateFlyToCart(btn) {
@@ -211,21 +359,39 @@
     }
   }
 
-  function init() {
+  async function init() {
     ShopeeI18n.apply(document);
     ShopeeUser.renderHeader();
-    // Inflate demo catalog once for big-list testing
-    if (ShopeeCatalog && typeof ShopeeCatalog.ensureDemoCatalogSize === 'function') {
-      ShopeeCatalog.ensureDemoCatalogSize(10000);
-    }
     bindSeeMore();
     bindCategories();
-    renderGrids();
+    bindDailyControls();
+    await renderGrids();
     updateBadge();
     window.addEventListener('shopee-cart-changed', updateBadge);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  async function renderGrids() {
+    try {
+      await Promise.all([loadFlash(), loadDaily(true)]);
+    } catch (e) {
+      // fallback to local catalog if DB/API unavailable
+      var cat = ShopeeCatalog.getCatalog();
+      var flash = cat.filter(function (p) { return p.section === 'flash'; });
+      var daily = cat.filter(function (p) { return p.section === 'daily'; });
+      if (currentCategory !== 'all') {
+        flash = flash.filter(function (p) { return p.category === currentCategory; });
+        daily = daily.filter(function (p) { return p.category === currentCategory; });
+      }
+      var fg = document.getElementById('flashSaleGrid');
+      if (fg) fg.innerHTML = flash.slice(0, 12).map(function (p) { return renderProductCard(p, true); }).join('');
+      dailyHasMore = daily.length > DAILY_PAGE_INIT;
+      renderDaily(true, daily.slice(0, DAILY_PAGE_INIT));
+      bindAddButtons();
+      updateSeeMoreButton();
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { init(); });
   else init();
 })();
 

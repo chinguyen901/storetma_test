@@ -3,6 +3,7 @@
  * Env: STRIPE_SECRET_KEY (sk_...)
  * POST JSON: { items: [{ id, qty, name?, unit_amount_cents? }] }
  */
+import { getSql } from './_db';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -38,7 +39,7 @@ function clampInt(n, min, max) {
   return Math.max(min, Math.min(max, x));
 }
 
-function resolveLine(item) {
+function resolveSeedLine(item) {
   if (!item || typeof item.id !== 'string') return null;
   const qty = clampInt(item.qty, 1, 99);
   const known = KNOWN_CENTS[item.id];
@@ -87,7 +88,51 @@ export default async function handler(req, res) {
   }
 
   const rawItems = Array.isArray(req.body?.items) ? req.body.items : [];
-  const lines = rawItems.map(resolveLine).filter(Boolean);
+  if (!rawItems.length) {
+    res.status(400).json({ error: 'Giỏ hàng trống hoặc sản phẩm không hợp lệ.' });
+    return;
+  }
+
+  const sql = getSql();
+  const wantedIds = Array.from(
+    new Set(
+      rawItems
+        .map((x) => (x && typeof x.id === 'string' ? x.id : ''))
+        .filter(Boolean)
+    )
+  );
+
+  var dbMap = {};
+  if (sql && wantedIds.length) {
+    try {
+      const dbRows = await sql(
+        `
+          SELECT id, name_vi, name_en, price_cents
+          FROM products
+          WHERE id = ANY($1::text[])
+        `,
+        [wantedIds]
+      );
+      dbRows.forEach((r) => {
+        dbMap[r.id] = r;
+      });
+    } catch (e) {
+      // fallback for seeded ids only if DB query fails
+    }
+  }
+
+  const lines = rawItems
+    .map((item) => {
+      if (!item || typeof item.id !== 'string') return null;
+      const qty = clampInt(item.qty, 1, 99);
+      const fromDb = dbMap[item.id];
+      if (fromDb) {
+        const name = (fromDb.name_en || fromDb.name_vi || item.id).toString().slice(0, 120);
+        return { name, unit_amount: clampInt(fromDb.price_cents, 50, 999_900), quantity: qty };
+      }
+      return resolveSeedLine(item);
+    })
+    .filter(Boolean);
 
   if (!lines.length) {
     res.status(400).json({ error: 'Giỏ hàng trống hoặc sản phẩm không hợp lệ.' });

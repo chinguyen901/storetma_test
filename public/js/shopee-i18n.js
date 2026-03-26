@@ -70,7 +70,12 @@
       catGaming: 'Gaming',
       catSupermarket: 'Siêu thị',
       catAccessories: 'Phụ kiện',
-      catKids: 'Mẹ & Bé'
+      catKids: 'Mẹ & Bé',
+      filterRelevance: 'Liên quan nhất',
+      filterPriceAsc: 'Giá: thấp đến cao',
+      filterPriceDesc: 'Giá: cao đến thấp',
+      filterNameAsc: 'Tên: A-Z',
+      searchBtn: 'Tìm kiếm'
     },
     en: {
       download: 'Download',
@@ -140,7 +145,12 @@
       catGaming: 'Gaming',
       catSupermarket: 'Supermarket',
       catAccessories: 'Accessories',
-      catKids: 'Toys & Kids'
+      catKids: 'Toys & Kids',
+      filterRelevance: 'Most relevant',
+      filterPriceAsc: 'Price: low to high',
+      filterPriceDesc: 'Price: high to low',
+      filterNameAsc: 'Name: A-Z',
+      searchBtn: 'Search'
     }
   };
 
