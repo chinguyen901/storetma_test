@@ -1,6 +1,6 @@
 /**
- * Stripe Checkout Session — Shopee demo (Vercel Serverless Function)
- * Env: STRIPE_SECRET_KEY (sk_test_... or sk_live_...)
+ * Stripe Checkout Session — Shopee demo (Next.js API Route)
+ * Env: STRIPE_SECRET_KEY (sk_...)
  * POST JSON: { items: [{ id, qty, name?, unit_amount_cents? }] }
  */
 
@@ -49,7 +49,7 @@ function resolveLine(item) {
         : `Product ${item.id}`;
     return { name, unit_amount: known, quantity: qty };
   }
-  // User-added products in this demo use id prefix u_
+  // User-added products in this demo use id prefix u_ or _demo_
   if (item.id.startsWith('u_') || item.id.includes('_demo_')) {
     const name =
       typeof item.name === 'string' && item.name.trim()
@@ -61,29 +61,26 @@ function resolveLine(item) {
   return null;
 }
 
-function json(res, statusCode, obj, extraHeaders) {
-  res.statusCode = statusCode;
-  const headers = { 'Content-Type': 'application/json', ...CORS, ...(extraHeaders || {}) };
-  Object.keys(headers).forEach((k) => res.setHeader(k, headers[k]));
-  res.end(JSON.stringify(obj));
+function setCors(res) {
+  Object.keys(CORS).forEach((k) => res.setHeader(k, CORS[k]));
 }
 
 export default async function handler(req, res) {
+  setCors(res);
+
   if (req.method === 'OPTIONS') {
-    res.statusCode = 204;
-    Object.keys(CORS).forEach((k) => res.setHeader(k, CORS[k]));
-    res.end('');
+    res.status(204).end('');
     return;
   }
 
   if (req.method !== 'POST') {
-    json(res, 405, { error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeSecretKey || !stripeSecretKey.startsWith('sk_')) {
-    json(res, 500, {
+    res.status(500).json({
       error: 'Chưa cấu hình Stripe. Thêm STRIPE_SECRET_KEY (sk_...) trong Vercel → Project → Settings → Environment Variables.',
     });
     return;
@@ -93,18 +90,18 @@ export default async function handler(req, res) {
   const lines = rawItems.map(resolveLine).filter(Boolean);
 
   if (!lines.length) {
-    json(res, 400, { error: 'Giỏ hàng trống hoặc sản phẩm không hợp lệ.' });
+    res.status(400).json({ error: 'Giỏ hàng trống hoặc sản phẩm không hợp lệ.' });
     return;
   }
   if (lines.length > 30) {
-    json(res, 400, { error: 'Quá nhiều dòng (tối đa 30).' });
+    res.status(400).json({ error: 'Quá nhiều dòng (tối đa 30).' });
     return;
   }
 
   let sum = 0;
   for (const L of lines) sum += L.unit_amount * L.quantity;
   if (sum > 5_000_000) {
-    json(res, 400, { error: 'Tổng tiền vượt giới hạn demo.' });
+    res.status(400).json({ error: 'Tổng tiền vượt giới hạn demo.' });
     return;
   }
 
@@ -138,13 +135,13 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     if (data?.error) {
-      json(res, 400, { error: data.error.message || 'Stripe error' });
+      res.status(400).json({ error: data.error.message || 'Stripe error' });
       return;
     }
 
-    json(res, 200, { url: data.url });
+    res.status(200).json({ url: data.url });
   } catch (err) {
-    json(res, 500, { error: err?.message || 'Server error' });
+    res.status(500).json({ error: err?.message || 'Server error' });
   }
 }
 

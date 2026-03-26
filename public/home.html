@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopee | Shop Online for Electronics, Fashion &amp; More</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#9f1b00",
+              "on-primary-fixed-variant": "#5c0b00",
+              "surface-dim": "#d3d5d5",
+              "surface-container-lowest": "#ffffff",
+              "on-primary-fixed": "#000000",
+              "on-error-container": "#510017",
+              "on-error": "#ffefef",
+              "surface": "#f6f6f6",
+              "surface-container-highest": "#dbdddd",
+              "surface-bright": "#f6f6f6",
+              "surface-container-low": "#f0f1f1",
+              "secondary-dim": "#9d1b00",
+              "on-tertiary-container": "#510c72",
+              "on-secondary": "#ffefec",
+              "primary-fixed": "#ff775b",
+              "outline-variant": "#acadad",
+              "error-dim": "#a70138",
+              "primary-container": "#ff775b",
+              "secondary-container": "#ffc4b7",
+              "tertiary": "#7f3f9f",
+              "outline": "#767777",
+              "primary-dim": "#9d1a00",
+              "secondary-fixed": "#ffc4b7",
+              "tertiary-container": "#de98ff",
+              "tertiary-fixed-dim": "#d08bf0",
+              "on-tertiary-fixed-variant": "#5b1a7b",
+              "on-tertiary": "#feeeff",
+              "error-container": "#f74b6d",
+              "inverse-primary": "#fd5837",
+              "on-surface": "#2d2f2f",
+              "primary": "#b22203",
+              "on-secondary-fixed": "#6b0f00",
+              "on-secondary-container": "#8e1700",
+              "secondary": "#b22101",
+              "tertiary-fixed": "#de98ff",
+              "surface-container-high": "#e1e3e3",
+              "on-primary-container": "#4b0700",
+              "on-surface-variant": "#5a5c5c",
+              "surface-container": "#e7e8e8",
+              "on-background": "#2d2f2f",
+              "on-tertiary-fixed": "#300047",
+              "surface-tint": "#b22203",
+              "error": "#b41340",
+              "background": "#f6f6f6",
+              "primary-fixed-dim": "#ff5c3b",
+              "inverse-surface": "#0c0f0f",
+              "inverse-on-surface": "#9c9d9d",
+              "on-primary": "#ffefec",
+              "tertiary-dim": "#723292",
+              "secondary-fixed-dim": "#ffb09f",
+              "surface-variant": "#dbdddd"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .product-card:hover .add-to-cart-btn { opacity: 1; transform: translateY(0); }
+        .cart-hover { transition: transform 180ms ease, filter 180ms ease; will-change: transform; }
+        .cart-hover:hover { transform: translateY(-2px) scale(1.06); filter: drop-shadow(0 10px 12px rgba(0,0,0,0.18)); }
+        #cartFab { position: fixed; right: 18px; bottom: 18px; z-index: 80; }
+        #cartFab.hidden { display: none; }
+        #cartFab .fab-btn { width: 56px; height: 56px; border-radius: 9999px; display:flex; align-items:center; justify-content:center; background:#EE4D2D; color:white; box-shadow: 0 18px 35px rgba(238,77,45,0.35); transition: transform 180ms ease, box-shadow 180ms ease; }
+        #cartFab:hover .fab-btn { transform: translateY(-2px) scale(1.04); box-shadow: 0 22px 45px rgba(238,77,45,0.45); }
+        #cartFabCount { position:absolute; top:-6px; right:-6px; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 9999px; background: #fff; color:#b22203; font-weight: 800; font-size: 11px; display:flex; align-items:center; justify-content:center; border: 1px solid #b22203; }
+        .fly-img { position: fixed; z-index: 9999; width: 42px; height: 42px; border-radius: 10px; overflow: hidden; background-size: cover; background-position: center; box-shadow: 0 18px 35px rgba(0,0,0,0.22); pointer-events: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<header class="bg-[#EE4D2D] dark:bg-[#b22203] text-white font-['Inter'] antialiased tracking-tight docked full-width top-0 z-50 shadow-sm backdrop-blur-md bg-opacity-95">
+<div class="flex flex-col w-full px-4 py-2 max-w-7xl mx-auto">
+<nav class="flex flex-wrap justify-between items-center gap-2 text-xs py-1">
+<div class="flex gap-4 items-center">
+<a class="text-white/90 text-sm font-medium hover:text-white/70 transition-opacity" href="#" data-i18n="download">Download</a>
+<a class="text-white/90 text-sm font-medium hover:text-white/70 transition-opacity" href="#" data-i18n="support">Support</a>
+<div class="flex items-center gap-1 rounded bg-white/15 px-1 py-0.5">
+<button type="button" class="px-2 py-0.5 rounded text-white/90 hover:bg-white/20" data-lang-btn="vi">VI</button>
+<span class="text-white/50">|</span>
+<button type="button" class="px-2 py-0.5 rounded text-white/90 hover:bg-white/20" data-lang-btn="en">EN</button>
+</div>
+</div>
+<div class="flex gap-3 items-center" id="navGuest">
+<a class="text-white/90 text-sm font-medium hover:text-white/70 transition-opacity" href="login.html" data-i18n="register">Register</a>
+<a class="text-white/90 text-sm font-medium hover:text-white/70 transition-opacity" href="login.html" data-i18n="login">Login</a>
+</div>
+<div class="hidden flex gap-3 items-center text-sm" id="navUser">
+<span class="material-symbols-outlined text-xl align-middle">person</span>
+<span id="userDisplayName" class="font-medium max-w-[140px] truncate"></span>
+<button type="button" id="btnLogout" class="text-white/90 underline text-xs" data-i18n="logout">Logout</button>
+</div>
+</nav>
+<div class="flex items-center gap-8 py-3">
+<a href="home.html" class="text-2xl font-bold text-white tracking-tighter hover:opacity-90">Shopee</a>
+<div class="flex-1 relative group">
+<input class="w-full py-2.5 px-4 bg-white text-on-surface rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-fixed ring-inset" data-i18n-placeholder="searchPh" placeholder="Search for products, brands and shops" type="text"/>
+<button class="absolute right-1 top-1 bottom-1 px-5 bg-[#EE4D2D] hover:bg-primary-dim rounded transition-colors">
+<span class="material-symbols-outlined text-white" data-icon="search">search</span>
+</button>
+</div>
+<div class="flex items-center gap-6">
+<a id="cartIconLink" href="cart.html" class="relative cursor-pointer group scale-95 active:duration-150 cart-hover" title="Cart">
+<span class="material-symbols-outlined text-3xl" data-icon="shopping_cart">shopping_cart</span>
+<span id="cartCountBadge" class="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-primary min-w-[1.25rem] text-center hidden">0</span>
+</a>
+<div class="cursor-pointer group scale-95 active:duration-150">
+<span class="material-symbols-outlined text-3xl" data-icon="notifications">notifications</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 pt-4 pb-24">
+<section class="grid grid-cols-12 gap-2 mb-8 h-[320px] relative z-0">
+<div class="col-span-8 relative overflow-hidden rounded bg-surface-container-low shadow-sm group">
+<img alt="hero promotion banner" class="w-full h-full object-cover" data-alt="vibrant lifestyle e-commerce banner with high energy models showcasing summer fashion in a bright sunlit studio with orange accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbkqRxeSexj_fvQdS6MzT317bLmZWrkTsyudkbzuqmXNTRElJFvvrhGBtjuEE-JtNzAM51albGrgbKGlbjyDBdjuuvWjkjP_pTFG2CKNs57pGMNuI0NBT2V25ajMP67Krz3FXW0bAYDJCCfyo22CVWF933CydL0mZWFil7bjDvCW7eaZH-wHpxRCAiTxQOexAptW6N9av_hw0OjhYPMdn2Xlk1cwVN-ZoRjGsBV4sq6o5YomwRyJoRUhl_Uvv6JijYqfFbX9Hl37s"/>
+<div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent flex items-center p-12 pointer-events-none">
+<div class="max-w-md">
+<h2 class="text-white text-5xl font-extrabold leading-tight mb-4 tracking-tight" data-i18n="summerSale">SUMMER <br/>SUPER SALE</h2>
+<p class="text-white/90 text-lg mb-6" data-i18n="summerSub">Up to 70% Off Everything</p>
+<button type="button" class="bg-white text-primary px-8 py-3 font-bold rounded shadow-lg hover:bg-primary-container transition-all pointer-events-auto" data-i18n="shopNow">Shop Now</button>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 flex gap-2">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+<div class="w-2 h-2 rounded-full bg-white/50"></div>
+<div class="w-2 h-2 rounded-full bg-white/50"></div>
+</div>
+</div>
+<div class="col-span-4 flex flex-col gap-2">
+<div class="flex-1 bg-tertiary-container rounded overflow-hidden relative group">
+<img alt="electronics promotion" class="w-full h-full object-cover" data-alt="close up shot of modern silver wireless headphones on a clean purple background with tech aesthetic neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJnMf4U3SQW1b1gqx2_mDDxzgROwL117qp0ZMCONaB-OXRLvgM47Tb5rpl1lDCPXR-u5-_fqQ93dyjVlKeCIuvdEpydLUlYJAzpM9gqDpDgKfPwbYl72XhNu8JAomUMouz2iW6v6I_tUCDEIll5bz4BVyeZDuXknfm8u6aTzHtU79EJ3rNiej8s3zxfUpHxvHtQeG9qt1LcNSrzuObJ3dknWBBobmZzkA9l8FkxBiOj9HK256SydD5M6xbS3th9DX25QkeJPm5WLk"/>
+<div class="absolute inset-0 p-6 flex flex-col justify-end">
+<span class="text-tertiary font-bold text-sm bg-white/80 w-fit px-2 py-0.5 rounded mb-2">TECH DEALS</span>
+<h3 class="text-on-tertiary-container text-xl font-bold">New Audio Arrivals</h3>
+</div>
+</div>
+<div class="flex-1 bg-secondary-container rounded overflow-hidden relative group">
+<img alt="beauty promotion" class="w-full h-full object-cover" data-alt="array of luxury skincare products on a reflective warm surface with soft bokeh lighting and orange floral accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfK0QkHRbjyKjzkQ2NFOxrmAsNlzcrhWmQ0N68BMtnaAp4HarVFpiTDQ0X3ST59fRvlrLnDHF8808YUGku2JQSqiGuDzZnRtua4wByz7ThV-SwCEdXdRxjWxn1iDKiBunfFhITpG2b9c6OJNOaQokwjJ9xiNQhOAhdqKbLmUOuPHVSwFbzBV6DkpY_-XKs4u461OM58S5jHu5hhJEAjklx8LszyoF-b4qDZtWlA2ejglizxYuWbU2OLwwtBAdT3eeJesyhTdBHhAM"/>
+<div class="absolute inset-0 p-6 flex flex-col justify-end">
+<span class="text-secondary font-bold text-sm bg-white/80 w-fit px-2 py-0.5 rounded mb-2">BEAUTY HUB</span>
+<h3 class="text-on-secondary-container text-xl font-bold">Skincare Essentials</h3>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-white rounded mb-8 p-4 shadow-sm overflow-x-auto hide-scrollbar border border-surface-container-high relative z-10">
+<div class="flex justify-between items-center gap-4 min-w-[800px]">
+<button type="button" data-category="all" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform ring-2 ring-primary/20">
+<span class="material-symbols-outlined text-white text-2xl" data-icon="apps">apps</span>
+</div>
+<span class="text-xs text-center font-bold text-primary" data-i18n="catAll">All</span>
+</button>
+<button type="button" data-category="fashion" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="apparel">apparel</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catFashion">Fashion</span>
+</button>
+<button type="button" data-category="electronics" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="devices">devices</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catElectronics">Electronics</span>
+</button>
+<button type="button" data-category="beauty" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="face">face</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catBeauty">Beauty</span>
+</button>
+<button type="button" data-category="home" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="chair">chair</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catHome">Home &amp; Living</span>
+</button>
+<button type="button" data-category="gaming" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="sports_esports">sports_esports</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catGaming">Gaming</span>
+</button>
+<button type="button" data-category="supermarket" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="local_mall">local_mall</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catSupermarket">Supermarket</span>
+</button>
+<button type="button" data-category="accessories" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="watch">watch</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catAccessories">Accessories</span>
+</button>
+<button type="button" data-category="kids" class="flex flex-col items-center group cursor-pointer w-24 category-pill">
+<div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="toys">toys</span>
+</div>
+<span class="text-xs text-center font-medium" data-i18n="catKids">Toys &amp; Kids</span>
+</button>
+</div>
+</section>
+<section class="bg-white rounded mb-8 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between p-4 border-b border-surface">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary font-bold" data-icon="bolt">bolt</span>
+<h2 class="text-xl font-bold text-primary uppercase italic tracking-tighter" data-i18n="flashSale">Flash Sale</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-on-surface text-white font-bold px-1.5 py-0.5 rounded-sm text-sm">01</span>
+<span class="font-bold text-on-surface">:</span>
+<span class="bg-on-surface text-white font-bold px-1.5 py-0.5 rounded-sm text-sm">24</span>
+<span class="font-bold text-on-surface">:</span>
+<span class="bg-on-surface text-white font-bold px-1.5 py-0.5 rounded-sm text-sm">52</span>
+</div>
+</div>
+<a class="text-primary text-sm font-medium hover:underline flex items-center" href="#"><span data-i18n="seeAll">See All</span> <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></a>
+</div>
+<div id="flashSaleGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 p-4"></div>
+</section>
+<section class="mb-4 flex items-center gap-2 border-b-4 border-primary pb-2 w-fit">
+<h2 class="text-lg font-bold text-primary uppercase" data-i18n="dailyDiscover">Daily Discover</h2>
+</section>
+<section id="dailyGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2"></section>
+<div class="flex justify-center mt-8">
+<button id="btnSeeMoreDaily" type="button" class="bg-white border border-outline-variant text-on-surface-variant px-12 py-3 rounded-sm hover:bg-surface-container-low transition-colors font-medium" data-i18n="seeAll">See More</button>
+</div>
+</main>
+<a id="cartFab" href="cart.html" class="hidden" aria-label="Cart">
+  <div class="fab-btn cart-hover">
+    <span class="material-symbols-outlined text-[28px]" aria-hidden="true">shopping_cart</span>
+  </div>
+  <div id="cartFabCount" class="hidden">0</div>
+</a>
+<footer class="bg-[#f6f6f6] dark:bg-[#2d2f2f] w-full pt-12 pb-24 border-t border-[#e1e3e3] dark:border-[#acadad]/15">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-7xl mx-auto px-6 text-xs font-['Inter'] leading-loose">
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-[#2d2f2f] dark:text-[#f6f6f6] uppercase tracking-widest text-[10px]">Customer Service</h4>
+<ul class="flex flex-col gap-1 text-gray-500 hover:text-[#EE4D2D]">
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Help Centre</a></li>
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Shopee Blog</a></li>
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Shopee Mall</a></li>
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Payment Methods</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-[#2d2f2f] dark:text-[#f6f6f6] uppercase tracking-widest text-[10px]">About Shopee</h4>
+<ul class="flex flex-col gap-1 text-gray-500 hover:text-[#EE4D2D]">
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">About Us</a></li>
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Shopee Careers</a></li>
+<li><a class="hover:text-primary underline decoration-[#EE4D2D] underline-offset-4" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-[#2d2f2f] dark:text-[#f6f6f6] uppercase tracking-widest text-[10px]">Payment</h4>
+<div class="flex flex-wrap gap-2">
+<div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center p-1">VISA</div>
+<div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center p-1">MC</div>
+<div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center p-1">PP</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-[#2d2f2f] dark:text-[#f6f6f6] uppercase tracking-widest text-[10px]">Logistics</h4>
+<div class="flex flex-wrap gap-2">
+<div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center p-1">SPX</div>
+<div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center p-1">DHL</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-[#2d2f2f] dark:text-[#f6f6f6] uppercase tracking-widest text-[10px]">Follow Us</h4>
+<div class="flex gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="facebook">social_leaderboard</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="photo_camera">photo_camera</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="video_library">video_library</span>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-surface-container-high flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="text-gray-400 text-[10px]">© 2024 Shopee. All Rights Reserved.</div>
+<div class="font-bold text-[#EE4D2D]">Shopee</div>
+</div>
+</footer>
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-2 pb-safe bg-white/80 dark:bg-[#2d2f2f]/80 z-50 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] md:hidden">
+<a class="flex flex-col items-center justify-center text-[#EE4D2D] font-bold transition-transform duration-200 scale-110" href="home.html">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-medium font-['Inter']" data-i18n="home">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="text-[10px] font-medium font-['Inter']" data-i18n="mall">Mall</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="live_tv">live_tv</span>
+<span class="text-[10px] font-medium font-['Inter']" data-i18n="live">Live</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-transform duration-200" href="cart.html">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="text-[10px] font-medium font-['Inter']" data-i18n="cart">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-transform duration-200" href="login.html">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-medium font-['Inter']" data-i18n="me">Me</span>
+</a>
+</nav>
+<script src="js/shopee-i18n.js"></script>
+<script src="js/shopee-catalog.js"></script>
+<script src="js/shopee-cart.js"></script>
+<script src="js/shopee-user.js"></script>
+<script src="js/shopee-home.js"></script>
+</body></html>
+

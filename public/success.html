@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thanh toán thành công | Shopee</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&amp;display=swap" rel="stylesheet"/>
+</head>
+<body class="min-h-screen bg-[#f6f6f6] font-['Inter'] flex flex-col items-center justify-center p-6">
+  <nav class="fixed top-0 left-0 right-0 bg-[#EE4D2D] text-white py-3 px-4">
+    <div class="max-w-lg mx-auto flex justify-between items-center">
+      <a href="home.html" class="font-bold">Shopee</a>
+      <a href="home.html" class="text-sm opacity-90 hover:underline">Về trang chủ</a>
+    </div>
+  </nav>
+  <div class="mt-16 max-w-md w-full bg-white rounded-sm shadow p-8 text-center">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center text-3xl text-green-600">✓</div>
+    <h1 class="text-xl font-bold text-[#b22203] mb-2">Thanh toán thành công</h1>
+    <p class="text-sm text-slate-600 mb-6">Cảm ơn bạn. Đơn hàng đã được ghi nhận (chế độ test Stripe).</p>
+    <p id="cartResetNote" class="hidden text-xs text-slate-500 mb-6">Đã làm mới giỏ hàng.</p>
+    <a href="home.html" class="inline-block w-full py-3 bg-[#EE4D2D] text-white font-bold rounded-sm hover:opacity-95">Tiếp tục mua sắm</a>
+  </div>
+
+  <script src="js/shopee-cart.js"></script>
+  <script>
+    (function () {
+      try {
+        var qs = new URLSearchParams(window.location.search || '');
+        var sid = qs.get('session_id');
+        if (sid && typeof window.ShopeeCart === 'object' && typeof window.ShopeeCart.clearCart === 'function') {
+          window.ShopeeCart.clearCart();
+          var note = document.getElementById('cartResetNote');
+          if (note) note.classList.remove('hidden');
+        }
+      } catch (e) {
+        // non-blocking
+      }
+    })();
+  </script>
+</body>
+</html>
+
