@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node -r ./scripts/crypto-polyfill.cjs ./node_modules/vitest/vitest.mjs run",
+    "test:watch": "node -r ./scripts/crypto-polyfill.cjs ./node_modules/vitest/vitest.mjs"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.6"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
